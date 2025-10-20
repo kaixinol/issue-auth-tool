@@ -1,0 +1,32 @@
+cache = true
+[secret]
+GITHUB_TOKEN = ''
+OWNER = 'CollegesChat'
+REPO_NAME = 'university-information'
+llm = { key = '', server = '', model = '' }
+[settings]
+type = ['discussions'] # issues or discussions
+prompt = """
+请帮我核验这个issue，确定他的类型，并根据我提供的信息判断说的是否正确，并返回json：
+{"type": "类型", "reason": "原因","command": "指令"}
+
+类型有：
+outdated（对应指令outdate）
+evil（对应指令del）
+alias（对应指令alias）
+invalid（当issue无意义或者不正确时或者不符合上述类别，并且不要有command键值）
+
+例子：一个issue，要求改名某个学校，你就command输出对应的指令（alias $old $new [$issueID]）
+command如果是多行，用换行符分隔
+"""
+prompt_mcp = """
+请告诉我处理这个issue你需要知道的信息
+以下指令你可以使用：
+view $ID [$ID ...]
+google $query
+
+返回json，list[str]，什么都不需要返回[]
+"""
+[[settings.mcp]]
+google = { cx = '', key = '' }
+viewer = { config = '' }

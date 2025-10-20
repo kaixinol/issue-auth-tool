@@ -1,0 +1,20 @@
+[project]
+name = "issue-auth-tool"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-api-python-client>=2.182.0",
+    "openai>=1.108.1",
+    "pygithub>=2.8.1",
+    "uniinfo-editor @ git+https://github.com/CollegesChat/uniinfo-editor"
+]
+
+[project.scripts]
+issue_auth_tool = "issues_auth_tool:run"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+[tool.setuptools.packages.find]
+where = ["src"]
