@@ -1,23 +1,9 @@
-import logging
 from tomllib import load
 
-from rich.logging import RichHandler
-
-
-def setup_logger() -> logging.Logger:
-    logger = logging.getLogger('IAT')
-    logger.setLevel(logging.DEBUG)
-    logger.handlers.clear()
-    ch = RichHandler(
-        rich_tracebacks=True, markup=True, show_time=False, show_path=False
-    )
-    ch.setLevel(logging.DEBUG)
-    ch.setFormatter(logging.Formatter('%(message)s'))
-    logger.addHandler(ch)
-    return logger
-
-
-logger = setup_logger()
 with open('config.toml', 'rb') as f:
     config = load(f)
 setting = config['settings']
+
+REGEX_CMD = r'(del|outdate)(\s+\d+)+'
+REGEX_AKA = r'alias(\s+[\u4e00-\u9fff]+){2}(\s+\d+)*'
+REGEX_MCP = {'view': r'view(\s+\d+)+', 'google': r'google(\s+[\u4e00-\u9fff]+){2}'}

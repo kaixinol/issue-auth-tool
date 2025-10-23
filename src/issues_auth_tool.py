@@ -16,7 +16,6 @@ client = OpenAI(
 setting = config['settings']
 
 
-
 def fetch_issues_and_discussions() -> Iterator[dict]:
     # issues
     if 'issues' in setting['type']:
@@ -28,8 +27,11 @@ def fetch_issues_and_discussions() -> Iterator[dict]:
 
     # discussions
     if 'discussions' in setting['type']:
-        for disc in repo.get_discussions( discussion_graphql_schema="id number title body", answered=False):
+        for disc in repo.get_discussions(
+            discussion_graphql_schema='id number title body', answered=False
+        ):
             yield {'title': disc.title, 'num': disc.number, 'text': disc.body or ''}
+
 
 def get_llm_response(instructions: str, input: str) -> str:
     return client.responses.create(
@@ -48,12 +50,10 @@ def handle_instruction(instructions: list[str]) -> str:
             case 'view':
                 pass
 
-cache = {}
+
 def run():
     for post in fetch_issues_and_discussions():
         print(post)
-        if config['cache']:
-            ...
 
 
 if __name__ == '__main__':

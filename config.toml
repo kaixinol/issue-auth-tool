@@ -1,4 +1,3 @@
-cache = true
 [secret]
 GITHUB_TOKEN = ''
 OWNER = 'CollegesChat'
@@ -27,6 +26,7 @@ google $query
 
 返回json，list[str]，什么都不需要返回[]
 """
+google_query = "+{u1} +{u2} (site:.edu.cn OR site:.gov.cn) "
 [[settings.mcp]]
 google = { cx = '', key = '' }
 viewer = { config = '' }

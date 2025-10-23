@@ -1,0 +1,56 @@
+{
+    "type": "object",
+    "properties": {
+        "judgement": {
+            "type": "string",
+            "enum": [
+                "correct",
+                "incorrect"
+            ]
+        },
+        "cmd": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "judgement",
+        "cmd"
+    ],
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "judgement": {
+                        "const": "correct"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "cmd": {
+                        "type": "string",
+                        "pattern": "^(del|outdate|alias)"
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "judgement": {
+                        "const": "incorrect"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "cmd": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(?!del|outdate|alias).+"
+                    }
+                }
+            }
+        }
+    ]
+}
