@@ -9,12 +9,18 @@
             ]
         },
         "cmd": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        },
+        "reason": {
             "type": "string"
         }
     },
     "required": [
-        "judgement",
-        "cmd"
+        "judgement"
     ],
     "allOf": [
         {
@@ -26,11 +32,13 @@
                 }
             },
             "then": {
-                "properties": {
-                    "cmd": {
-                        "type": "string",
-                        "pattern": "^(del|outdate|alias)"
-                    }
+                "required": [
+                    "cmd"
+                ],
+                "not": {
+                    "required": [
+                        "reason"
+                    ]
                 }
             }
         },
@@ -43,12 +51,13 @@
                 }
             },
             "then": {
-                "properties": {
-                    "cmd": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "^(?!del|outdate|alias).+"
-                    }
+                "required": [
+                    "reason"
+                ],
+                "not": {
+                    "required": [
+                        "cmd"
+                    ]
                 }
             }
         }

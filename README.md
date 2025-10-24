@@ -34,6 +34,8 @@
 <summary>流程图</summary>
 
 ```mermaid
+
+
 flowchart TD
   Start([开始])
   CheckType{是否为 del / outdate / alias？}

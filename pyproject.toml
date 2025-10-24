@@ -19,3 +19,8 @@ issue_auth_tool = "issues_auth_tool:run"
 requires = ["setuptools>=61.0"]
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]

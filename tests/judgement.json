@@ -1,0 +1,37 @@
+{
+    "legal": [
+        {
+            "judgement": "correct",
+            "cmd": [
+                "del"
+            ]
+        },
+        {
+            "judgement": "correct",
+            "cmd": [
+                "outdate",
+                "alias"
+            ]
+        },
+        {
+            "judgement": "incorrect",
+            "reason": "Model misunderstood the intent"
+        }
+    ],
+    "illegal": [
+        {
+            "judgement": "correct",
+            "cmd": []
+        },
+        {
+            "judgement": "correct",
+            "reason": "extra field"
+        },
+        {
+            "judgement": "incorrect",
+            "cmd": [
+                "del"
+            ]
+        }
+    ]
+}
