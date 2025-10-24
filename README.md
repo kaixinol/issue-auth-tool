@@ -39,13 +39,16 @@
 flowchart TD
   Start([开始])
   CheckType{是否为 del / outdate / alias？}
+  %% type.json
   Terminate([终止 — 非 del/outdate/alias])
   AskLLM[要求 LLM 输出它想要的 MCP 指令]
   Validate{MCP 指令是否合法？}
+  %% mcp.json
   Pause([暂停：要求用户修正 MCP 指令])
   Execute[执行合法的 MCP 指令并获取信息]
   Merge[将获取的信息与 issue/discussion 内容合并并发送给 LLM]
   Judge{判定：LLM判定是否正确}
+  %% judgement.json
   OutputDecision[输出：del / outdate / alias（任选其一）]
   OutputReason[输出不正确的理由]
   End([结束])
