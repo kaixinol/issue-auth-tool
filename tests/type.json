@@ -1,18 +1,26 @@
 {
     "legal": [
         {
-            "type": "del"
-        },
-        {
-            "type": "outdate"
+            "type": "alias",
+            "reason": "rule: found old/new name pattern",
+            "mcp": [
+                "view 28272",
+                "google 西安电子科技大学 西北电讯工程学院"
+            ]
         }
     ],
     "illegal": [
         {
-            "type": "a"
+            "type": "alias",
+            "reason": "rule: found old/new name pattern",
+            "mcp": []
         },
         {
-            "type": "b"
+            "type": "invalid",
+            "reason": "rule: invalid type should not have mcp",
+            "mcp": [
+                "view 28272"
+            ]
         }
     ]
 }

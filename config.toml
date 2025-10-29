@@ -1,30 +1,62 @@
 [secret]
-GITHUB_TOKEN = ''
+GITHUB_TOKEN=''
 OWNER = 'CollegesChat'
 REPO_NAME = 'university-information'
-llm = { key = '', server = '', model = '' }
+llm = { key = '', server = '', model = 'gemini-2.5-flash' }
 [settings]
 type = ['discussions'] # issues or discussions
-prompt = """
-请帮我核验这个issue，确定他的类型，并根据我提供的信息判断说的是否正确，并返回json：
-{"type": "类型", "reason": "原因","command": "指令"}
+prompt_type = """
+任务
+识别下面的 issue 类型，并在该类型为 "outdated" / "evil" / "alias" 时，生成处理该 issue 所需的 MCP 指令（仅用于获取更多信息）。**仅**返回一个单行 JSON 对象，不要任何额外文字或注释。
 
-类型有：
-outdated（对应指令outdate）
-evil（对应指令del）
-alias（对应指令alias）
-invalid（当issue无意义或者不正确时或者不符合上述类别，并且不要有command键值）
+输出格式（严格）
+{"type":"<type>","reason":"<简短原因>","mcp":[ "<指令字符串>", ... ]}
+- type 仅允许："outdated"、"evil"、"alias"、"invalid"。
+- reason 为简短原因字符串。
+- mcp 为字符串列表（可为空）。当 type 为 "invalid" 时，mcp 必须为 []。
+- 若无法判断或不安全，返回 {"type":"invalid","reason":"uncertain","mcp":[]}。
 
-例子：一个issue，要求改名某个学校，你就command输出对应的指令（alias $old $new [$issueID]）
-command如果是多行，用换行符分隔
+允许的 MCP 指令（严格）
+- view <ID> [<ID> ...]           （<ID> 为整数，为问卷回答ID）
+- google <大学名称1> <大学名称2>
+
+规则（决策要点）
+- 只处理对于问卷的问题反馈（过时、恶意回答、学校更名）
+- A<数字>代表问卷回答ID
+- 仅当 type 属于 "outdated" / "evil" / "alias" 时才在 mcp 中生成指令；若为建议/讨论类或问卷答复，type 设为 "invalid" 并且 mcp=[]。
+- 若检测到长文本或包含关键词 ["建议","xx大学怎么样"]，优先判为 "invalid"（建议性讨论），把原因写入 reason。
+
+示例（合法输出）
+1) 识别为 alias 且需要查看：
+{"type":"alias","reason":"rule: found old/new name pattern","mcp":["view 28272","google 西安电子科技大学 西北电讯工程学院"]}
+
+2) 建议/讨论类（无需指令）：
+{"type":"invalid","reason":"suggestion: 长文本为建议性讨论","mcp":[]}
+
+注意
+- 输出必须为单行、严格 JSON 对象，**仅**该 JSON，不得包含额外文本、注释或格式说明。
+- 若输出不符合格式，请返回 {"type":"invalid","reason":"invalid_output","mcp":[]}.
 """
-prompt_mcp = """
-请告诉我处理这个issue你需要知道的信息
-以下指令你可以使用：
-view $ID [$ID ...]
-google $query
+prompt_judgement = """
+以下是你需要验证的 Issue：
+其被判定的类型为 {type}
+（`outdate`：内容过时；`del`：恶意或无效回答；`alias`：学校更名）
 
-返回json，list[str]，什么都不需要返回[]
+以下是判定理由：
+{reasons}
+
+请根据上述 **类型** 和 **原因**，生成相应的处理指令。
+
+输出格式：
+
+* 返回一个 `list[str]`，其中每个元素为一条指令；
+* 若此反馈无效或无需处理，返回 `null`。
+
+允许的指令格式：
+
+del ID [issueId...]
+outdate ID [issueId...]
+alias oldName newName [issueId...]
 """
 google_query = "+{u1} +{u2} (site:.edu.cn OR site:.gov.cn) "
 [[settings.mcp]]

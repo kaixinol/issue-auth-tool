@@ -2,33 +2,56 @@
 
 <details>
 <summary>工作流程</summary>
+# Issue 处理流程简介
 
-1. **判断类型**
+1. **识别类型与生成 MCP 指令**
 
-    - 检查该 Issue / Discussion 是否属于以下三类之一：
+   * 由 LLM 识别该 Issue / Discussion 的类型：
 
-      - `del`
-      - `outdate`
-      - `alias`
+     * `outdate`
+     * `evil`
+     * `alias`
+     * `invalid`（无效或不相关内容）
+   * 若识别为前三种类型（`outdate` / `evil` / `alias`）：
 
-    - 若属于其中之一，请让 LLM 输出它**打算执行的 MCP 指令**，以便后续验证。
+     * 要求 LLM 同时生成其**所需的 MCP 指令**（用于查询上下文或补充信息）。
+   * 若识别为 `invalid`：
+
+     * 流程终止，无需生成指令。
 
 2. **验证 MCP 指令合法性**
 
-    - 检查 LLM 输出的命令是否符合预期格式与安全规则。
+   * 检查 LLM 输出的指令是否符合以下规则：
 
-3. **执行命令**
+     * 仅允许使用：
 
-    - 若命令合法：执行对应的 MCP 指令，获取所需信息。
-    - 若命令不合法：暂停执行，并提示用户**手动修改命令**。
+       * `view <ID> [<ID> ...]`
+       * `google <大学名称1> <大学名称2>`
+     * 禁止执行型指令（如 `del` / `outdate` / `alias`）。
+   * 若指令格式或内容不合法：
 
-4. **结果验证**
+     * 暂停流程，要求用户**人工修正**。
 
-    - 将获取到的信息与原始 Issue / Discussion 内容一并发送给 LLM。
-    - 让 LLM 判断其推断是否正确：
+3. **执行指令与信息获取**
 
-           - 若判断正确 → 输出 `del` / `outdate` / `alias` 中的一项。
-           - 若判断错误 → 提供错误原因。
+   * 对合法的 MCP 指令进行执行。
+   * 获取相关上下文、搜索结果或附加数据。
+
+4. **结果合并与再判断**
+
+   * 将获取到的上下文信息与原始 Issue / Discussion 内容合并。
+   * 将合并后的信息再次发送给 LLM，让其进行结果判定：
+
+     * **若判定正确** → 输出最终决策（`del` / `outdate` / `alias`）。
+     * **若判定不正确** → 输出错误原因，并记录在结果中。
+
+5. **输出与结束**
+
+   * 流程最终输出：
+
+     * 一项确定的操作类型（`del` / `outdate` / `alias`）。
+     * 或不正确原因说明（当判定失败时）。
+   * 之后流程结束。
 
 <details>
 <summary>流程图</summary>
@@ -38,30 +61,22 @@
 
 flowchart TD
   Start([开始])
-  CheckType{是否为 del / outdate / alias？}
-  %% type.json
-  Terminate([终止 — 非 del/outdate/alias])
-  AskLLM[要求 LLM 输出它想要的 MCP 指令]
+  DetectAndRequest{识别 issue 类型并在必要时生成 MCP 指令}
+  Terminate([终止 — 非 outdate/evil/alias 或 无需处理])
   Validate{MCP 指令是否合法？}
-  %% mcp.json
-  Pause([暂停：要求用户修正 MCP 指令])
+  Pause([暂停 — 要求人工/用户修正 MCP 指令])
   Execute[执行合法的 MCP 指令并获取信息]
-  Merge[将获取的信息与 issue/discussion 内容合并并发送给 LLM]
-  Judge{判定：LLM判定是否正确}
-  %% judgement.json
-  OutputDecision[输出：del / outdate / alias（任选其一）]
-  OutputReason[输出不正确的理由]
+  Merge[将获取的信息与 issue 内容合并并发送给 LLM]
+  Judge{LLM 判定：结果是否正确？}
+  OutputDecision[输出：del / outdate / alias（任一）]
+  OutputReason[输出：不正确的理由]
   End([结束])
 
-  Start --> CheckType
-  CheckType -- 否 --> Terminate
-  CheckType -- 是 --> AskLLM
-  AskLLM --> Validate
-  Validate -- 否 --> Pause
-  Pause --> Validate
-  Validate -- 是 --> Execute
-  Execute --> Merge
-  Merge --> Judge
+  Start --> DetectAndRequest
+  DetectAndRequest -- 否 --> Terminate --> End
+  DetectAndRequest -- 是 --> Validate
+  Validate -- 否 --> Pause --> Validate
+  Validate -- 是 --> Execute --> Merge --> Judge
   Judge -- 对 --> OutputDecision --> End
   Judge -- 不对 --> OutputReason --> End
 

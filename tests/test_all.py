@@ -1,14 +1,24 @@
+# import atexit
 import json
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from jsonschema import ValidationError, validate
+
+# atexit.register(save_on_exit)
 
 # 项目根目录
 SRC_DIR = Path(__file__).parent.parent
 SCHEMA_DIR = SRC_DIR / 'src/schema'
 TEST_DIR = SRC_DIR / 'tests'
 print(SCHEMA_DIR, TEST_DIR)
+
+database: dict[int, Literal['invalid', 'processed']] = {}
+
+# def save_on_exit():
+#     with open('data.json', 'w', encoding='utf-8') as f:
+#         json.dump(data, f, ensure_ascii=False, indent=4)
 
 def load_json(filepath):
     """加载 JSON 文件"""
@@ -17,10 +27,6 @@ def load_json(filepath):
 
 
 def get_test_cases():
-    """
-    自动发现所有的 schema 和对应的测试文件
-    返回: [(schema_name, schema_path, test_case_path, case_data, should_pass), ...]
-    """
     cases = []
 
     # 遍历所有 schema 文件

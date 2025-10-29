@@ -1,8 +1,0 @@
-{
-    "type": "array",
-    "items": {
-        "type": "string",
-        "pattern": "^(view|google)"
-    },
-    "minItems": 1
-}

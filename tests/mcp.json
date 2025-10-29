@@ -1,4 +1,0 @@
-{
-  "legal": [["view 11122", "google 大学一 大学二"]],
-  "illegal": [["invalid 11122", "invalid 大学一 大学二"]]
-}
