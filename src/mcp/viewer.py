@@ -7,6 +7,8 @@ helper.do_load(setting['mcp']['viewer']['config'])
 
 
 def view(answer: str):
+    if answer not in helper.data:
+        return None
     return '\n'.join(
         [
             answer,
