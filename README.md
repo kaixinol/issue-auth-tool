@@ -2,6 +2,7 @@
 
 <details>
 <summary>工作流程</summary>
+
 # Issue 处理流程简介
 
 1. **识别类型与生成 MCP 指令**

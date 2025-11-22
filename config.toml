@@ -13,7 +13,7 @@ prompt_type = """
 {"type":"<type>","reason":"<简短原因>","mcp":[ "<指令字符串>", ... ]}
 - type 仅允许："outdated"、"evil"、"alias"、"invalid"。
 - reason 为简短原因字符串。
-- mcp 为字符串列表（可为空）。当 type 为 "invalid" 时，mcp 必须为 []。
+- mcp 为字符串列表（除type无效外不可为空）。当 type 为 "invalid" 时，mcp 必须为 []。
 - 若无法判断或不安全，返回 {"type":"invalid","reason":"uncertain","mcp":[]}。
 
 允许的 MCP 指令（严格）
@@ -25,6 +25,7 @@ prompt_type = """
 - A<数字>代表问卷回答ID
 - 仅当 type 属于 "outdated" / "evil" / "alias" 时才在 mcp 中生成指令；若为建议/讨论类或问卷答复，type 设为 "invalid" 并且 mcp=[]。
 - 若检测到长文本或包含关键词 ["建议","xx大学怎么样"]，优先判为 "invalid"（建议性讨论），把原因写入 reason。
+- 输出为中文
 
 示例（合法输出）
 1) 识别为 alias 且需要查看：
